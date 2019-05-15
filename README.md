@@ -8,33 +8,33 @@
 ## Introduction
 
 Using `only` and `except`, we can be selective in what attributes we want to
-render to JSON in our basic Rails API. But what if we want to be inclusive? With
-Rails models, we're often dealing with many different related objects. Using
-`include` when rendering JSON, our API can send data about one resource along
-with data about its associated resources. 
+render to JSON in our basic Rails API. But what if we want to be _inclusive_
+rather than selective? With Rails models, we're often dealing with many
+different related objects. Using `include` when rendering JSON, our API can send
+data about one resource along with data about its associated resources.
 
-In a single response, our Rails API will be able to convey relationships between
-data within JSON. In order to fully understand `include`, however, we'll need to
-expand our example domain to so that we have a few related resources to work
-with.
+In this lesson, we will look at how our Rails API will be able to convey
+relationships between multiple object in a single JSON object. In order to fully
+understand `include`, however, we'll need to expand our example domain to so
+that we have a few related resources to work with.
 
 ## Setting up Additional Related Resources To Include - Bird Sightings
 
-In the last few labs we've been playing around with a basic resource, `Bird`,
-for a bird watching application. The `Bird` resource is already set up in this
-lesson with `name` and `species` attributes. In a bird watching application, we
-could imagine birds coming up a lot. Likely, the same type of bird will come up
-a lot, so a `Bird` model makes sense.
+In the last few code-alongs, we've been playing around with a basic resource,
+`Bird` for a bird watching application. The `Bird` resource is already set up in
+this lesson with `name` and `species` attributes. We could imagine in a fully
+developed bird watching application that birds would come up a lot. Likely, the
+same type of bird will come up a lot, so a `Bird` model makes sense.
 
-We could imagine if we were to expand on this application, a logical next step
-for bird watching might be some sort of location-based _bird sighting_ system. A
-user of this site might one day be able to log the sighting of rare birds in their
-backyard. 
+We could imagine, as well, if we were to expand on this application, a logical
+next step for bird watching might be some sort of location-based _bird sighting_
+system. A user of this site might one day be able to log the sighting of rare
+birds in their backyard.
 
-The next resource to build then might be `Location` so we could connect specific
-birds to specific locations. To speed things up, let's use the `model`
-generator. We can also give `Location` a few attributes, `latitude` and
-`longitude`:
+The next resource to build, then, might be `Location` so we could connect
+specific birds to specific locations. To speed things up, let's use the `model`
+generator Rails provides. We can also give `Location` a few attributes,
+`latitude` and `longitude`:
 
 ```sh
 rails g model location latitude:float longitude:float
@@ -43,7 +43,7 @@ rails g model location latitude:float longitude:float
 The `model` generator creates the migration and model for us here which is all
 we will need in this case.
 
-Let's create one more resource, a `Sighting`. A `Sighting` will connect a
+We can create one more resource, a `Sighting`. A `Sighting` will connect a
 specific bird and location. A bird sighting in real life is an event that ties
 birds to their locations at a specific time. Similarly, a `Sighting` will do
 the same by tying one `Bird` to one `Location`.
@@ -168,9 +168,9 @@ should produce an object representing a _sighting_:
 ```
 
 > **ASIDE:** Notice that the object includes its own `"id"`, as well as the
-related `"bird_id"` and `"location_id"`. That is useful data. We _could_ use
-these values to send additional requests using JavaScript to get bird and
-location data if needed.
+> related `"bird_id"` and `"location_id"`. That is useful data. We _could_ use
+> these values to send additional requests using JavaScript to get bird and
+> location data if needed.
 
 To include bird and location information in this controller action, now that our
 models are connected, the most direct way would be to build a custom hash like 
@@ -204,6 +204,10 @@ This produces nested objects in our rendered JSON for `"bird"` and `"location"`:
   }
 }
 ```
+
+Often, when you first starting out, this works perfectly fine to get yourself
+started, and is more than enough to begin testing against with `fetch()`
+requests on a frontend.
 
 ## Using `include`
 
@@ -251,6 +255,16 @@ of models:
 def index
   @sightings = Sighting.all
   render json: @sightings, include: [:bird, :location]
+end
+```
+
+As before with `only` and `except`, `include` is actually just another option
+that we can pass into the `to_json` method. Rails is just _obscuring_ this part:
+
+```ruby
+def index
+  @sightings = Sighting.all
+  render json: @sightings.to_json(include: [:bird, :location])
 end
 ```
 
