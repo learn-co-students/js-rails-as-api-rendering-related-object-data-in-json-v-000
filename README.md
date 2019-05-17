@@ -149,8 +149,8 @@ basic `show` action:
 
 ```ruby
 def show
-  @sighting = Sighting.find(params[:id])
-  render json: @sighting
+  sighting = Sighting.find_by(id: params[:id])
+  render json: sighting
 end
 ```
 
@@ -178,8 +178,8 @@ we did in the previous lesson:
 
 ```ruby
 def show
-  @sighting = Sighting.find(params[:id])
-  render json: { id: @sighting.id, bird: @sighting.bird, location: @sighting.location }
+  sighting = Sighting.find_by(id: params[:id])
+  render json: { id: sighting.id, bird: sighting.bird, location: sighting.location }
 end
 ```
 
@@ -205,24 +205,22 @@ This produces nested objects in our rendered JSON for `"bird"` and `"location"`:
 }
 ```
 
-Often, when you first starting out, this works perfectly fine to get yourself
-started, and is more than enough to begin testing against with `fetch()`
-requests on a frontend.
+Often, this works perfectly fine to get yourself started, and is more than
+enough to begin testing against with `fetch()` requests on a frontend.
 
 ## Using `include`
 
-An alternative option is to use the `include` keyword to indicate what models 
+An alternative option is to use the `include` keyword to indicate what models
 you want to nest:
 
 ```ruby
 def show
-  @sighting = Sighting.find(params[:id])
-  render json: @sighting, include: [:bird, :location]
+  sighting = Sighting.find_by(id: params[:id])
+  render json: sighting, include: [:bird, :location]
 end
 ```
 
-This produces a similar JSON as the previous custom configuration, though will
-include all the keys since we haven't excluded anything:
+This produces similar JSON as the previous custom configuration:
 
 ```js
 {
@@ -248,13 +246,13 @@ include all the keys since we haven't excluded anything:
 }
 ```
 
-This would also work fine when dealing with an action that renders a collection
-of models:
+All attributes of included objects will be listed by default. Using `include:`
+also works fine when dealing with an action that renders an array, like `all`:
 
 ```ruby
 def index
-  @sightings = Sighting.all
-  render json: @sightings, include: [:bird, :location]
+  sightings = Sighting.all
+  render json: sightings, include: [:bird, :location]
 end
 ```
 
@@ -263,8 +261,26 @@ that we can pass into the `to_json` method. Rails is just _obscuring_ this part:
 
 ```ruby
 def index
-  @sightings = Sighting.all
-  render json: @sightings.to_json(include: [:bird, :location])
+  sightings = Sighting.all
+  render json: sightings.to_json(include: [:bird, :location])
+end
+
+def show
+  sighting = Sighting.find_by(id: params[:id])
+  render json: sighting.to_json(include: [:bird, :location])
+end
+```
+
+And adding some error handling on our `show` action:
+
+```ruby
+def show
+  sighting = Sighting.find_by(id: params[:id])
+  if sighting
+    render json: sighting.to_json(include: [:bird, :location])
+  else
+    render json: { message: 'No sighting found with that id' }
+  end
 end
 ```
 
@@ -274,9 +290,9 @@ We see now that within a single controller action, it is possible to render
 related models as nested JSON data! If we imagine how this app might continue to
 develop, now that we have a way for birds to be tied to locations by _sightings_
 we could start to work on a way for these sightings to be created in a browser.
-We could also continue to expand on endpoints for this API. We now have the 
-the ability for specific types of birds to tell us _where_ they've been sighted,
-for instance.
+We could also continue to expand on endpoints for this API. We now have the the
+ability for specific types of birds to tell us _where_ they've been sighted, for
+instance.
 
 When nesting models in JSON the way we saw in this lab, it is entirely possible
 to use `include` in conjunction with `only` and `exclude`. For instance, if
@@ -284,8 +300,8 @@ we wanted to remove the `:updated_at` attribute from `Sighting` when rendered:
 
 ```ruby
 def show
-  @sighting = Sighting.find(params[:id])
-  render json: @sighting, include: [:bird, :location], except: [:updated_at]
+  sighting = Sighting.find_by(id: params[:id])
+  render json: sighting, include: [:bird, :location], except: [:updated_at]
 end
 ```
 
@@ -298,8 +314,8 @@ rewrite it entirely.
 
 ```ruby
 def show
-  @sighting = Sighting.find(params[:id])
-  render json: @sightings.to_json(:include => {:bird => {:only => [:name, :species]},:location => {:only => [:latitude, :longitude]}}
+  sighting = Sighting.find_by(id: params[:id])
+  render json: sightings.to_json(:include => {:bird => {:only => [:name, :species]},:location => {:only => [:latitude, :longitude]}}
 end
 ```
 
@@ -323,12 +339,12 @@ This does produce a more specific set of data:
 ```
 
 A single sighting of Quiscalus Quiscula on May 14th, 2019 in downtown Austin,
-Texas! 
+Texas!
 
 While that is neat, it seems silly to have to include such a complicated render
-line in our action. In this example, we're only dealing with three models.
-Customizing what is rendered in a larger set of nested data could quickly turn
-into a major headache.
+line in our action. In addition, in this example we're only dealing with three
+models. Customizing what is rendered in a larger set of nested data could
+quickly turn into a major headache.
 
 Now that we have covered how to customize and shape Rails model data into JSON,
 we can start to look at options for keeping that data well organized when
