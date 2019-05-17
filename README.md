@@ -73,8 +73,9 @@ class CreateSightings < ActiveRecord::Migration[5.2]
 end
 ```
 
-Running `rails db:migrate` now will produce slightly different schema, but still
-connect the `"birds"` and `"locations"` tables to the `"sightings"` table by id:
+Running `rails db:migrate` now will produce slightly different schema, but if we
+look at the file, we see it still connects the `"birds"` and `"locations"` 
+tables to the `"sightings"` table by id:
 
 ```ruby
 create_table "sightings", force: :cascade do |t|
