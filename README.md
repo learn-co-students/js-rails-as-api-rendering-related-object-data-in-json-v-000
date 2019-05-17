@@ -78,13 +78,13 @@ connect the `"birds"` and `"locations"` tables to the `"sightings"` table by id:
 
 ```ruby
 create_table "sightings", force: :cascade do |t|
-    t.integer "bird_id"
-    t.integer "location_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["bird_id"], name: "index_sightings_on_bird_id"
-    t.index ["location_id"], name: "index_sightings_on_location_id"
-  end
+  t.integer "bird_id"
+  t.integer "location_id"
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+  t.index ["bird_id"], name: "index_sightings_on_bird_id"
+  t.index ["location_id"], name: "index_sightings_on_location_id"
+end
 ```
 
 The other effect of using `references` in the generator is that it will add
@@ -105,15 +105,15 @@ following relationships to the `Bird` and `Location` models:
 
 ```rb
 class Bird < ApplicationRecord
-    has_many :sightings
-    has_many :locations, through: :sightings
+  has_many :sightings
+  has_many :locations, through: :sightings
 end
 ```
 
 ```rb
 class Location < ApplicationRecord
-    has_many :sightings
-    has_many :birds, through: :sightings
+  has_many :sightings
+  has_many :birds, through: :sightings
 end
 ```
 
