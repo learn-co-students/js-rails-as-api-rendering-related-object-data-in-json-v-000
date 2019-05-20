@@ -316,7 +316,10 @@ rewrite it entirely.
 ```ruby
 def show
   sighting = Sighting.find_by(id: params[:id])
-  render json: sightings.to_json(:include => {:bird => {:only => [:name, :species]},:location => {:only => [:latitude, :longitude]}}
+  render json: sightings.to_json(:include => {
+    :bird => {:only => [:name, :species]},
+    :location => {:only => [:latitude, :longitude]}
+  })
 end
 ```
 
