@@ -14,8 +14,8 @@ different related objects. Using `include` when rendering JSON, our API can send
 data about one resource along with data about its associated resources.
 
 In this lesson, we will look at how our Rails API will be able to convey
-relationships between multiple object in a single JSON object. In order to fully
-understand `include`, however, we'll need to expand our example domain to so
+relationships between multiple models in a single JSON object. In order to fully
+understand `include`, however, we'll need to expand our example domain so
 that we have a few related resources to work with.
 
 ## Setting up Additional Related Resources To Include - Bird Sightings
@@ -50,7 +50,7 @@ the same by tying one `Bird` to one `Location`.
 
 In the next part of this lesson, we'll add a controller action for this
 `Sighting` resource, so this time, rather than using `model` to create our
-files, we can use the `resource` generator. In addition to this, since we have
+files, we can use the `resource` generator. In addition, since we have
 two existing resources we're connecting, we can use the `references` keyword
 when listing them, and Rails will automatically connect them:
 
@@ -98,9 +98,9 @@ class Sighting < ApplicationRecord
 end
 ```
 
-The other models will remain unaltered, so we'll have to update them. The bird
+The other models will remain unaltered, so we'll have to update them. A bird
 may show up many times so it could be argued that a bird _has many_ sightings.
-The same would apply for location. Through sightings, birds have many locations,
+The same would apply for a location. Through sightings, birds have many locations,
 and vice versa, so we would update our models to reflect these. Add the
 following relationships to the `Bird` and `Location` models:
 
@@ -142,7 +142,7 @@ sighting_e = Sighting.create(bird: bird_a, location: location_b)
 With three related resources created, we can begin working on rendering them in
 JSON.
 
-## Including Related Models in A Single Controller Action
+## Including Related Models in a Single Controller Action
 
 In the `SightingsController`, now that the resources are created and connected,
 we should be able to confirm our data has been created by including a
@@ -211,7 +211,7 @@ enough to begin testing against with `fetch()` requests on a frontend.
 
 ## Using `include`
 
-An alternative option is to use the `include` keyword to indicate what models
+An alternative is to use the `include` option to indicate what models
 you want to nest:
 
 ```ruby
@@ -248,7 +248,8 @@ This produces similar JSON as the previous custom configuration:
 ```
 
 All attributes of included objects will be listed by default. Using `include:`
-also works fine when dealing with an action that renders an array, like `all`:
+also works fine when dealing with an action that renders an array, like when we use `all`
+in `index` actions:
 
 ```ruby
 def index
@@ -289,9 +290,9 @@ end
 
 We see now that within a single controller action, it is possible to render
 related models as nested JSON data! If we imagine how this app might continue to
-develop, now that we have a way for birds to be tied to locations by _sightings_
+develop, now that we have a way for birds to be tied to locations by _sightings_,
 we could start to work on a way for these sightings to be created in a browser.
-We could also continue to expand on endpoints for this API. We now have the the
+We could also continue to expand on endpoints for this API. We now have the
 ability for specific types of birds to tell us _where_ they've been sighted, for
 instance.
 
@@ -311,7 +312,9 @@ resources and try to limit what _they_ display.
 
 For example, to _also_ remove all instances of `:created_at` and `:updated_at`
 from the nested bird and location data in the above example, we'd have to
-rewrite it entirely.
+add nesting into the _options_, so the included bird and location data can
+have their own options listed. Using the fully written `to_json` render statement
+can help keep things a bit more readable here:
 
 ```ruby
 def show
