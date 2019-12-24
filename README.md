@@ -78,7 +78,7 @@ end
 ```
 
 Running `rails db:migrate` now will produce slightly different schema, but if we
-look at the file, we see it still connects the `"birds"` and `"locations"` 
+look at the file, we see it still connects the `"birds"` and `"locations"`
 tables to the `"sightings"` table by id:
 
 ```ruby
@@ -160,7 +160,7 @@ end
 ```
 
 With the Rails server running, visiting `http://localhost:3000/sightings/1`
-should produce an object representing a _sighting_: 
+should produce an object representing a _sighting_:
 
 ```js
 {
@@ -178,7 +178,7 @@ should produce an object representing a _sighting_:
 > location data if needed.
 
 To include bird and location information in this controller action, now that our
-models are connected, the most direct way would be to build a custom hash like 
+models are connected, the most direct way would be to build a custom hash like
 we did in the previous lesson:
 
 ```ruby
@@ -360,4 +360,3 @@ quickly turn into a major headache.
 Now that we have covered how to customize and shape Rails model data into JSON,
 we can start to look at options for keeping that data well organized when
 building more complicated APIs.
-
