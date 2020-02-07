@@ -1,0 +1,23 @@
+class SightingsController < ApplicationController
+  def index
+    sightings = Sighting.all
+    render json: sightings, include: [:bird, :location]
+    # same as:
+    # render json: sightings.to_json(include: [:bird, :location])
+  end
+
+  def show
+    sighting = Sighting.find_by(id: params[:id])
+    # render json: sighting
+    # Ruby hash using Rails join table magic to get both bird and location
+    # render json: { id: sighting.id, bird: sighting.bird, location: sighting.location}
+    # Rails way of getting the same information using include
+   
+    # error handling
+    if sighting
+      render json: sighting, include: [:bird, :location]
+    else
+      render json: { message: 'Dem birds just ain\'t in these neck of the woods'}
+    end
+  end
+end
