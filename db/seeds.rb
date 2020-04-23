@@ -7,6 +7,7 @@
 #   Character.create(name: 'Luke', movie: movies.first)
 
 
+
 bird_a = Bird.create(name: "Black-Capped Chickadee", species: "Poecile Atricapillus")
 bird_b = Bird.create(name: "Grackle", species: "Quiscalus Quiscula")
 bird_c = Bird.create(name: "Common Starling", species: "Sturnus Vulgaris")
